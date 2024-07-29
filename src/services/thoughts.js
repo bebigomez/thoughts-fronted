@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseUrl = "http://localhost:3001/api/thoughts";
+const baseUrl = "/api/thoughts";
 
 const getAll = () => {
   const request = axios.get(baseUrl);
@@ -11,6 +11,11 @@ const getOne = (id) => {
   return request.then((response) => response.data);
 };
 
+const addLike = (id, like) => {
+  const request = axios.patch(`${baseUrl}/${id}`, like);
+  return request.then((response) => response.data);
+};
+
 const create = (newObject) => {
   const request = axios.post(baseUrl, newObject);
   return request.then((response) => response.data);
@@ -19,5 +24,6 @@ const create = (newObject) => {
 export default {
   getAll,
   getOne,
+  addLike,
   create,
 };

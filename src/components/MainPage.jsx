@@ -1,41 +1,71 @@
-import { useState } from "react";
+/* eslint react/prop-types: 0 */
+
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import axios from "axios";
+import thoughtService from "../services/thoughts";
 
 import Scribble from "./icons/Scribble";
 import PostForm from "../components/PostForm";
 
-const MainPage = ({ posts, setPosts }) => {
+const MainPage = ({ posts, setPosts, location }) => {
   const [blogVisibility, setBlogVisibility] = useState(false);
+  const [likedPosts, setLikedPosts] = useState([]);
+
+  useEffect(() => {
+    const likedPostsFromLocalStorage = JSON.parse(
+      localStorage.getItem("likedPosts")
+    );
+    if (likedPostsFromLocalStorage) {
+      setLikedPosts(likedPostsFromLocalStorage);
+    }
+  }, []);
+
+  useEffect(() => {
+    const hasSeenAlert = localStorage.getItem("hasSeenLocationPermission");
+
+    if (!hasSeenAlert) {
+      alert(
+        "We ask for location permission to know from which country you are writing. If you prefer, you can decline it and post from an unknown origin."
+      );
+      localStorage.setItem("hasSeenLocationPermission", true);
+    }
+  });
 
   const toggleVisibility = () => {
     setBlogVisibility(!blogVisibility);
   };
 
-  const handleLike = (id) => {
-    const url = `http://localhost:3001/api/thoughts/${id}`;
+  const handleLike = async (id) => {
     const post = posts.find((p) => p.id === id);
-    const like = { likes: post.likes + 1 };
 
-    axios
-      .patch(url, like)
-      .then((response) => {
-        const date = new Date(response.data.timestamp);
+    const like = likedPosts.includes(id)
+      ? { likes: post.likes - 1 }
+      : { likes: post.likes + 1 };
 
-        const day = date.getDate();
-        const month = date.getMonth() + 1;
-        const year = date.getFullYear();
+    try {
+      const patchedPost = await thoughtService.addLike(id, like);
 
-        const formattedDate = `${day}/${month}/${year}`;
+      const updatedLikedPosts = likedPosts.includes(id)
+        ? likedPosts.filter((item) => item !== id)
+        : [...likedPosts, id];
+      localStorage.setItem("likedPosts", JSON.stringify(updatedLikedPosts));
+      setLikedPosts(updatedLikedPosts);
 
-        const formattedPost = { ...response.data, timestamp: formattedDate };
+      const date = new Date(patchedPost.timestamp);
 
-        setPosts(posts.map((p) => (p.id !== id ? p : formattedPost)));
-      })
-      .catch((error) => {
-        console.error("Error updating like:", error);
-      });
+      const day = date.getDate();
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear();
+
+      const formattedDate = `${day}/${month}/${year}`;
+
+      const formattedPost = { ...patchedPost, timestamp: formattedDate };
+
+      setPosts(posts.map((p) => (p.id !== id ? p : formattedPost)));
+    } catch (error) {
+      console.error("Error updating like:", error);
+    }
   };
 
   return (
@@ -55,15 +85,15 @@ const MainPage = ({ posts, setPosts }) => {
         {blogVisibility && (
           <PostForm
             toggleVisibility={toggleVisibility}
+            location={location}
             posts={posts}
             setPosts={setPosts}
           />
         )}
       </div>
-      <h2 className="text-xl align-top font-semibold mt-10">
+      <h2 className="text-xl align-top font-semibold mt-10 mb-6">
         Other people have shared:
       </h2>
-      <div className="border-gray-200 mt-6"></div>
       {posts.map((post) => (
         <div key={post.id}>
           <Link
@@ -74,16 +104,33 @@ const MainPage = ({ posts, setPosts }) => {
           </Link>
           <div>
             <p className="text-sm text-gray-500">Posted on: {post.timestamp}</p>
-            <p className="text-sm text-gray-500">
-              From {post.origin.city}, {post.origin.country}
-            </p>
+            <div className="flex items-center">
+              {post.origin.country !== "unknown" ? (
+                <>
+                  <p className="text-sm text-gray-500">
+                    From {post.origin.country}
+                  </p>
+                  <img
+                    className="h-4 rounded-sm ml-2"
+                    src={`https://flagcdn.com/h20/${post.origin.countryCode}.png`}
+                    alt={`Flag of ${post.origin.country}`}
+                  />
+                </>
+              ) : (
+                <p className="text-sm text-gray-500">From Unknown</p>
+              )}
+            </div>
           </div>
           <div className="flex items-center justify-end p-4 border-b border-gray-200">
             <button onClick={() => handleLike(post.id)}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 aria-hidden="true"
-                className="w-6 h-6 fill-current text-gray-500 transition-colors hover:text-blue-500"
+                className={`w-6 h-6 fill-current ${
+                  likedPosts.includes(post.id)
+                    ? "text-blue-500"
+                    : "text-gray-500"
+                }`}
               >
                 <path
                   fillRule="evenodd"
