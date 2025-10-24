@@ -32,7 +32,7 @@ const App = () => {
                 reject(error);
               });
           },
-          function (error) {
+          function () {
             resolve({
               city: "unknown",
               country: "unknown",

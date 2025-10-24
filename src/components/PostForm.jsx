@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PropTypes from "prop-types";
 
 import thoughtService from "../services/thoughts";
 
@@ -63,6 +64,12 @@ const PostForm = ({ toggleVisibility, location, posts, setPosts }) => {
       </form>
     </div>
   );
+};
+PostForm.propTypes = {
+  toggleVisibility: PropTypes.func.isRequired,
+  location: PropTypes.string,
+  posts: PropTypes.array.isRequired,
+  setPosts: PropTypes.func.isRequired,
 };
 
 export default PostForm;

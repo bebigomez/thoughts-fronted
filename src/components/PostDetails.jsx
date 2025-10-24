@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { usePost } from "../hooks/usePost";
+import PropTypes from "prop-types";
 import formatTimestamp from "../utils";
 import LoadingSkeleton from "./LoadingSkeleton";
 
@@ -31,6 +32,10 @@ const Post = ({ post: initialPost }) => {
       <p className="text-base text-gray-700 mt-4">{post.body}</p>
     </div>
   );
+};
+
+Post.propTypes = {
+  post: PropTypes.object
 };
 
 export default Post;
