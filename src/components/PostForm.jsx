@@ -67,7 +67,7 @@ const PostForm = ({ toggleVisibility, location, posts, setPosts }) => {
 };
 PostForm.propTypes = {
   toggleVisibility: PropTypes.func.isRequired,
-  location: PropTypes.string,
+  location: PropTypes.object,
   posts: PropTypes.array.isRequired,
   setPosts: PropTypes.func.isRequired,
 };

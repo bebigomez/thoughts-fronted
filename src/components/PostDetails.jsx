@@ -3,6 +3,7 @@ import { usePost } from "../hooks/usePost";
 import PropTypes from "prop-types";
 import formatTimestamp from "../utils";
 import LoadingSkeleton from "./LoadingSkeleton";
+import PostOrigin from "./PostOrigin";
 
 const Post = ({ post: initialPost }) => {
   const { id } = useParams();
@@ -16,19 +17,7 @@ const Post = ({ post: initialPost }) => {
     <div className="container mx-auto p-4 mt-8 md:w-1/2 md">
       <h1 className="text-4xl font-bold text-gray-800 mb-1">{post.title}</h1>
       <p className="text-xs text-gray-700">Posted on {formatTimestamp(post.timestamp)}</p>
-      <div className="flex items-center">
-        {post.origin.country !== "unknown" ? (
-          <>
-            <img
-              className="h-3 rounded-sm mr-1"
-              src={`https://flagcdn.com/h20/${post.origin.countryCode}.png`}
-            ></img>
-            <p className="text-xs text-gray-700">{`From ${post.origin.country}`}</p>
-          </>
-        ) : (
-          <p className="text-xs text-gray-700">From Unknown</p>
-        )}
-      </div>
+      <PostOrigin origin={post.origin} />
       <p className="text-base text-gray-700 mt-4">{post.body}</p>
     </div>
   );
