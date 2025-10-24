@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseUrl = "/api/thoughts";
+const baseUrl = "https://thoughts-p437.onrender.com/api/thoughts";
 
 const getAll = () => {
   const request = axios.get(baseUrl);
