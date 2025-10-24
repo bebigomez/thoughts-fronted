@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import thoughtService from "../services/thoughts";
+import formatTimestamp from "../utils";
 
 import Scribble from "./icons/Scribble";
 import PostForm from "../components/PostForm";
@@ -103,7 +104,7 @@ const MainPage = ({ posts, setPosts, location }) => {
             {post.title}
           </Link>
           <div>
-            <p className="text-sm text-gray-500">Posted on: {post.timestamp}</p>
+            <p className="text-sm text-gray-500">Posted on: {formatTimestamp(post.timestamp)}</p>
             <div className="flex items-center">
               {post.origin.country !== "unknown" ? (
                 <>

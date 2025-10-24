@@ -65,22 +65,7 @@ const App = () => {
         (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
       );
 
-      const formattedPosts = sortedPosts.map((post) => {
-        const date = new Date(post.timestamp);
-
-        const day = date.getDate();
-        const month = date.getMonth() + 1;
-        const year = date.getFullYear();
-
-        const formattedDate = `${day}/${month}/${year}`;
-
-        return {
-          ...post,
-          timestamp: formattedDate,
-        };
-      });
-
-      setPosts(formattedPosts);
+      setPosts(sortedPosts);
     });
   }, []);
 
