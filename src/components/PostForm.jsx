@@ -21,17 +21,7 @@ const PostForm = ({ toggleVisibility, location, posts, setPosts }) => {
     };
 
     thoughtService.create(postObject).then((response) => {
-      const date = new Date(response.timestamp);
-
-      const day = date.getDate();
-      const month = date.getMonth() + 1;
-      const year = date.getFullYear();
-
-      const formattedDate = `${day}/${month}/${year}`;
-
-      const formattedPost = { ...response, timestamp: formattedDate };
-
-      setPosts([formattedPost, ...posts]);
+      setPosts([response, ...posts]);
     });
 
     setTitle("");
