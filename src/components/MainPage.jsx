@@ -14,6 +14,7 @@ const MainPage = ({ posts, setPosts, location }) => {
   const [blogVisibility, setBlogVisibility] = useState(false);
   const [likedPosts, setLikedPosts] = useState([]);
   const [viewMode, setViewMode] = useState("list");
+  const [sortBy, setSortBy] = useState("date");
 
   useEffect(() => {
     const likedPostsFromLocalStorage = JSON.parse(
@@ -61,9 +62,21 @@ const MainPage = ({ posts, setPosts, location }) => {
     }
   };
 
+  const getSortedPosts = () => {
+    const sortedPosts = [...posts];
+    
+    if (sortBy === "date") {
+      return sortedPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
+    } else if (sortBy === "likes") {
+      return sortedPosts.sort((a, b) => b.likes - a.likes);
+    }
+    
+    return sortedPosts;
+  };
+
   const renderListView = () => (
     <div>
-      {posts.map((post) => (
+      {getSortedPosts().map((post) => (
         <PostListItem
           key={post.id}
           post={post}
@@ -76,7 +89,7 @@ const MainPage = ({ posts, setPosts, location }) => {
 
   const renderCardsView = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {posts.map((post) => (
+      {getSortedPosts().map((post) => (
         <PostCard
           key={post.id}
           post={post}
@@ -115,7 +128,23 @@ const MainPage = ({ posts, setPosts, location }) => {
         <h2 className="text-xl font-semibold">
           Other people have shared:
         </h2>
-        <ViewModeToggle viewMode={viewMode} onViewModeChange={setViewMode} />
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <label htmlFor="sort" className="text-sm font-medium">
+              Sort by:
+            </label>
+            <select
+              id="sort"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="appearance-none px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="date">Date</option>
+              <option value="likes">Likes</option>
+            </select>
+          </div>
+          <ViewModeToggle viewMode={viewMode} onViewModeChange={setViewMode} />
+        </div>
       </div>
 
       {viewMode === "list" ? renderListView() : renderCardsView()}
