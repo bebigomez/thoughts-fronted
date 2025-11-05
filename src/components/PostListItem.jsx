@@ -8,7 +8,7 @@ const PostListItem = ({ post, isLiked, onLike }) => {
   return (
     <div key={post.id}>
       <Link
-        to={`/posts/${post.id}`}
+        to={`/thoughts/${post.id}`}
         className="block text-xl font-medium mt-4 transition-colors hover:text-blue-600"
       >
         {post.title}

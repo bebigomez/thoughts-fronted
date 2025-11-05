@@ -80,7 +80,7 @@ const App = () => {
           path="/"
           element={<MainPage posts={posts} setPosts={setPosts} location={location} />}
         />
-        <Route path="/posts/:id" element={<PostDetails post={post} />} />
+        <Route path="/thoughts/:id" element={<PostDetails post={post} />} />
       </Routes>
     </>
   );

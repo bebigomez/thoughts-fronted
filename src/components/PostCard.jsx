@@ -8,7 +8,7 @@ const PostCard = ({ post, isLiked, onLike }) => {
   return (
     <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 hover:shadow-lg transition-shadow">
       <Link
-        to={`/posts/${post.id}`}
+        to={`/thoughts/${post.id}`}
         className="block text-lg font-medium mb-3 transition-colors hover:text-blue-600 line-clamp-2"
       >
         {post.title}
