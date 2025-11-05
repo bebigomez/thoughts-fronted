@@ -69,10 +69,6 @@ const App = () => {
     });
   }, []);
 
-  const match = useMatch("/posts/:id");
-
-  const post = match ? posts.find((p) => p.id === match.params.id) : null;
-
   return (
     <>
       <Routes>
@@ -80,7 +76,7 @@ const App = () => {
           path="/"
           element={<MainPage posts={posts} setPosts={setPosts} location={location} />}
         />
-        <Route path="/thoughts/:id" element={<PostDetails post={post} />} />
+        <Route path="/thoughts/:id" element={<PostDetails />} />
       </Routes>
     </>
   );
