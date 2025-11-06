@@ -10,11 +10,48 @@ import PostListItem from "./PostListItem";
 import PostCard from "./PostCard";
 import ViewModeToggle from "./ViewModeToggle";
 
-const MainPage = ({ posts, setPosts, location }) => {
+const MainPage = ({ posts, setPosts }) => {
   const [blogVisibility, setBlogVisibility] = useState(false);
   const [likedPosts, setLikedPosts] = useState([]);
   const [viewMode, setViewMode] = useState("list");
   const [sortBy, setSortBy] = useState("date");
+  const [location, setLocation] = useState(null);
+
+  const getLocation = () => {
+    return new Promise((resolve, reject) => {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          function (position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            fetch(
+              `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
+            )
+              .then((response) => response.json())
+              .then((data) => {
+                const city = data.address.city;
+                const country = data.address.country;
+                const countryCode = data.address.country_code;
+                resolve({ city, country, countryCode });
+              })
+              .catch((error) => {
+                reject(error);
+              });
+          },
+          function () {
+            resolve({
+              city: "unknown",
+              country: "unknown",
+              countryCode: "unknown",
+            });
+          }
+        );
+      } else {
+        reject("Geolocation is not available in this browser.");
+      }
+    });
+  };
 
   useEffect(() => {
     const likedPostsFromLocalStorage = JSON.parse(
@@ -32,9 +69,21 @@ const MainPage = ({ posts, setPosts, location }) => {
       alert(
         "We ask for location permission to know from which country you are writing. If you prefer, you can decline it and post from an unknown origin."
       );
-      localStorage.setItem("hasSeenLocationPermission", true);
+      localStorage.setItem("hasSeenLocationPermission", "true");
+      fetchLocation();
+    } else {
+      fetchLocation();
     }
-  });
+  }, []);
+
+  const fetchLocation = async () => {
+    try {
+      const location = await getLocation();
+      setLocation(location);
+    } catch (error) {
+      console.error("Error getting location:", error);
+    }
+  };
 
   const toggleVisibility = () => {
     setBlogVisibility(!blogVisibility);
